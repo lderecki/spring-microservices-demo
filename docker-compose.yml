@@ -15,6 +15,18 @@ services:
       - 5433:5432
     networks:
       - internal
+  
+  microservice:
+    image: dict-service:latest
+    restart: always
+    depends_on:
+      - db
+    environment:
+      spring.datasource.url: jdbc:postgresql://db:5432/${DB_NAME}
+      spring.datasource.username: ${DB_USER}
+      spring.datasource.password: ${DB_PASSWORD}
+    networks:
+      - internal
 
 volumes:
   db-data-vol:

@@ -1,0 +1,37 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: simple-service
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/zaliczenie-db
+    username: postgres
+    password: ld112358
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+server:
+  port: 8081
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+server:
+  port: 0
