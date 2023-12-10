@@ -31,16 +31,58 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.dict_values
     OWNER to postgres;
 
+-------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.simple_table
+(
+    id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    first_dict_key character varying(20) COLLATE pg_catalog."default",
+    second_dict_key character varying(20) COLLATE pg_catalog."default",
+    "someTextData" character varying(200) COLLATE pg_catalog."default",
+    CONSTRAINT simple_table_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.simple_table
+    OWNER to postgres;
+
+
+
 -- Basic dict values
 
 INSERT INTO public.dicts(
 	dict_id, dict_name)
 	VALUES ('first_dict', 'Pierwszy słownik');
 
+INSERT INTO public.dicts(
+	dict_id, dict_name)
+	VALUES ('second_dict', 'Drugi słownik');
+
+---------------------------------------------------------
+
 INSERT INTO public.dict_values(
 	dict_id, dict_key, dict_value)
-	VALUES ('first_dict', 'FV', 'First value');
+	VALUES ('first_dict', 'PW', 'Pierwsza wartość');
 	
 INSERT INTO public.dict_values(
 	dict_id, dict_key, dict_value)
-	VALUES ('first_dict', 'SV', 'Second value');
+	VALUES ('first_dict', 'DW', 'Druga wartość');
+	
+INSERT INTO public.dict_values(
+	dict_id, dict_key, dict_value)
+	VALUES ('second_dict', 'TW', 'Trzecia wartość');
+	
+INSERT INTO public.dict_values(
+	dict_id, dict_key, dict_value)
+	VALUES ('second_dict', 'CW', 'Czwarta wartość');
+
+--------------------------------------------------------
+
+INSERT INTO public.simple_table(
+	first_dict_key, second_dict_key, some_text_data)
+	VALUES ('PW', 'TW', 'Dane tekstowe');
+	
+INSERT INTO public.simple_table(
+	first_dict_key, second_dict_key, some_text_data)
+	VALUES ('DW', 'CW', 'Dane tekstowe 2');

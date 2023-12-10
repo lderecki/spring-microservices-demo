@@ -16,7 +16,7 @@ services:
     networks:
       - internal
   
-  microservice:
+  dict-service:
     image: dict-service:latest
     restart: always
     depends_on:
@@ -25,6 +25,21 @@ services:
       spring.datasource.url: jdbc:postgresql://db:5432/${DB_NAME}
       spring.datasource.username: ${DB_USER}
       spring.datasource.password: ${DB_PASSWORD}
+    networks:
+      - internal
+
+  crud-service:
+    image: dict-service:latest
+    restart: always
+    depends_on:
+      - db
+    environment:
+      spring.datasource.url: jdbc:postgresql://db:5432/${DB_NAME}
+      spring.datasource.username: ${DB_USER}
+      spring.datasource.password: ${DB_PASSWORD}
+    deploy:
+      mode: replicated
+      replicas: 1
     networks:
       - internal
 

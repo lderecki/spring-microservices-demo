@@ -2,7 +2,13 @@ spring:
   profiles:
     active: dev
   application:
-    name: dict-service
+    name: crud-service
+
+dicts:
+  firstDict:
+    key: first_dict
+  secondDict:
+    key: second_dict
 
 ---
 
@@ -20,8 +26,11 @@ spring:
     show-sql: true
 
 server:
-  port: 8081
+  port: 8082
 
+dicts:
+  service:
+    url: http://127.0.0.1:8081/dict_values
 
 ---
 
