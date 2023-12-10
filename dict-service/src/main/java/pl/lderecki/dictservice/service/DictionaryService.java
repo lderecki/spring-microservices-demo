@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,7 @@ public class DictionaryService {
 
     private final DictEntityRepo dictEntityRepo;
 
-    private Map<String, DictDTO> inMemoryRepo = new HashMap<>();
+    private final Map<String, DictDTO> inMemoryRepo = new HashMap<>();
 
     public DictionaryService(DictRepo repo, DictEntityJpaRepo dictEntityJpaRepo) {
         this.repo = repo;
@@ -47,7 +48,7 @@ public class DictionaryService {
         inMemoryRepo.put(dictId, new DictDTO(refreshedDict));
     }
 
-    private boolean existsInMemoryRepo(String dictId, String dictKey) {
+    private boolean existsEntityInMemoryRepo(String dictId, String dictKey) {
         Map<String, DictEntityDTO> dict = inMemoryRepo.get(dictId).getEntities();
 
         return dict.containsKey(dictKey);
@@ -57,10 +58,19 @@ public class DictionaryService {
         return inMemoryRepo;
     }
 
+    public DictDTO findDictById(String dictId) {
+        DictDTO result = inMemoryRepo.get(dictId);
+
+        if (Objects.isNull(result))
+            throw new IllegalArgumentException("Not found");
+
+        return result;
+    }
+
     public DictEntityDTO findEntityById(String dictId, String dictKey) {
         Map<String, DictEntityDTO> dict = inMemoryRepo.get(dictId).getEntities();
 
-        if (!existsInMemoryRepo(dictId, dictKey))
+        if (!existsEntityInMemoryRepo(dictId, dictKey))
             throw new IllegalArgumentException("Not found");
 
         return dict.get(dictKey);
@@ -68,7 +78,7 @@ public class DictionaryService {
 
     public DictEntityDTO saveDictEntity(DictEntityDTO entityDTO) {
 
-        if (existsInMemoryRepo(entityDTO.getDictId(), entityDTO.getDictKey()))
+        if (existsEntityInMemoryRepo(entityDTO.getDictId(), entityDTO.getDictKey()))
             throw new IllegalStateException("Non-unique entry");
 
         DictEntity entity = new DictEntity(entityDTO.getDictId(), entityDTO.getDictKey(),
@@ -81,10 +91,10 @@ public class DictionaryService {
     }
 
     public void updateDictEntity(DictEntityUpdateDTO entityDTO, String dictId, String dictKey) {
-        if (!existsInMemoryRepo(dictId, dictKey))
+        if (!existsEntityInMemoryRepo(dictId, dictKey))
             throw new IllegalArgumentException("Not found");
 
-        DictEntity entity = new DictEntity(dictId, dictKey, entityDTO.getDictValue(), false);
+        DictEntity entity = new DictEntity(dictId, dictKey, entityDTO.getDictValue(), entityDTO.isDisabled());
 
         dictEntityRepo.save(entity);
         refreshDict(dictId);

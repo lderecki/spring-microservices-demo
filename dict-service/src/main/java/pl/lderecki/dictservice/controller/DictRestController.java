@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/dict_values")
 public class DictRestController {
 
     private final DictionaryService service;
@@ -21,20 +22,26 @@ public class DictRestController {
         this.service = service;
     }
 
-    @GetMapping("/dict_values")
+    @GetMapping
     public ResponseEntity<Map<String, DictDTO>> getAll() {
         Map<String, DictDTO> result = service.findAll();
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/dict_values/{dictId}/{dictKey}")
+    @GetMapping("/{dictId}")
+    public ResponseEntity<DictDTO> getDictById(@PathVariable("dictId") String dictId) {
+
+        return ResponseEntity.ok(service.findDictById(dictId));
+    }
+
+    @GetMapping("/{dictId}/{dictKey}")
     public ResponseEntity<DictEntityDTO> getById(@PathVariable("dictId") String dictId,
                                                  @PathVariable("dictKey") String dictKey) {
 
         return ResponseEntity.ok(service.findEntityById(dictId, dictKey));
     }
 
-    @PostMapping("/dict_values")
+    @PostMapping
     public ResponseEntity<?> postDictEntity(@RequestBody DictEntityDTO entity) {
         DictEntityDTO saved = service.saveDictEntity(entity);
 
@@ -42,7 +49,7 @@ public class DictRestController {
                                       + "/" + saved.getDictKey())).build();
     }
 
-    @PutMapping("/dict_values/{dictId}/{dictKey}")
+    @PutMapping("/{dictId}/{dictKey}")
     public ResponseEntity<?> putDictEntity(@RequestBody DictEntityUpdateDTO entityDTO, @PathVariable("dictId") String dictId,
                                            @PathVariable("dictKey") String dictKey) {
         service.updateDictEntity(entityDTO, dictId, dictKey);
@@ -56,7 +63,7 @@ public class DictRestController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalStateException e) {
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.notFound().build();
     }
 
