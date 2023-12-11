@@ -6,7 +6,6 @@ import pl.lderecki.dictservice.DTO.DictEntityDTO;
 import pl.lderecki.dictservice.DTO.DictEntityUpdateDTO;
 import pl.lderecki.dictservice.model.Dict;
 import pl.lderecki.dictservice.model.DictEntity;
-import pl.lderecki.dictservice.repo.DictEntityJpaRepo;
 import pl.lderecki.dictservice.repo.DictEntityRepo;
 import pl.lderecki.dictservice.repo.DictRepo;
 
@@ -26,9 +25,9 @@ public class DictionaryService {
 
     private final Map<String, DictDTO> inMemoryRepo = new HashMap<>();
 
-    public DictionaryService(DictRepo repo, DictEntityJpaRepo dictEntityJpaRepo) {
+    public DictionaryService(DictRepo repo, DictEntityRepo dictEntityRepo) {
         this.repo = repo;
-        this.dictEntityRepo = dictEntityJpaRepo;
+        this.dictEntityRepo = dictEntityRepo;
     }
 
     @PostConstruct
@@ -68,18 +67,23 @@ public class DictionaryService {
     }
 
     public DictEntityDTO findEntityById(String dictId, String dictKey) {
-        Map<String, DictEntityDTO> dict = inMemoryRepo.get(dictId).getEntities();
-
         if (!existsEntityInMemoryRepo(dictId, dictKey))
             throw new IllegalArgumentException("Not found");
+
+        Map<String, DictEntityDTO> dict = inMemoryRepo.get(dictId).getEntities();
 
         return dict.get(dictKey);
     }
 
     public DictEntityDTO saveDictEntity(DictEntityDTO entityDTO) {
 
+        if (!inMemoryRepo.containsKey(entityDTO.getDictId()))
+            throw new IllegalArgumentException("Dict not found");
+
         if (existsEntityInMemoryRepo(entityDTO.getDictId(), entityDTO.getDictKey()))
             throw new IllegalStateException("Non-unique entry");
+
+
 
         DictEntity entity = new DictEntity(entityDTO.getDictId(), entityDTO.getDictKey(),
                                            entityDTO.getDictValue(), false);
@@ -91,6 +95,9 @@ public class DictionaryService {
     }
 
     public void updateDictEntity(DictEntityUpdateDTO entityDTO, String dictId, String dictKey) {
+        if (!inMemoryRepo.containsKey(dictId))
+            throw new IllegalArgumentException("Dict not found");
+
         if (!existsEntityInMemoryRepo(dictId, dictKey))
             throw new IllegalArgumentException("Not found");
 
