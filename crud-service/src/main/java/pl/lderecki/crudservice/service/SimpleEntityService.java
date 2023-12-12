@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import pl.lderecki.crudservice.DTO.SimpleEntityReadDTO;
 import pl.lderecki.crudservice.DTO.SimpleEntityWriteDTO;
 import pl.lderecki.crudservice.model.SimpleEntity;
-import pl.lderecki.crudservice.repo.SimpleEntityJpaRepo;
 import pl.lderecki.crudservice.repo.SimpleEntityRepo;
 import pl.lderecki.crudservice.restTemplate.DictRestTemplate;
 
@@ -18,7 +17,7 @@ public class SimpleEntityService {
     private final SimpleEntityRepo repo;
     private final DictRestTemplate restTemplate;
 
-    public SimpleEntityService(SimpleEntityJpaRepo repo, DictRestTemplate restTemplate) {
+    public SimpleEntityService(SimpleEntityRepo repo, DictRestTemplate restTemplate) {
         this.repo = repo;
         this.restTemplate = restTemplate;
     }
