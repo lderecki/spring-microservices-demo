@@ -1,5 +1,6 @@
 package pl.lderecki.crudservice.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -34,8 +35,8 @@ class SimpleEntityServiceTest {
     @InjectMocks
     private SimpleEntityService testClass;
 
-    @Test
-    void findAll() throws Exception {
+    @BeforeEach
+    private void setFinals() throws Exception{
         Field FIRST_DICTfield = ReflectionUtils
                 .findFields(DictRestTemplate.class, f -> f.getName().equals("FIRST_DICT"),
                         ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
@@ -48,6 +49,9 @@ class SimpleEntityServiceTest {
         SECOND_DICTfield.setAccessible(true);
         FIRST_DICTfield.set(restTemplate, "test_id");
         SECOND_DICTfield.set(restTemplate, "test_id2");
+    }
+    @Test
+    void findAll() throws Exception {
 
         List<SimpleEntity> entities = new ArrayList<>();
         SimpleEntity simpleEntity = new SimpleEntity(1L, "test_key1", "test_key2", "test_data");
@@ -67,18 +71,6 @@ class SimpleEntityServiceTest {
 
     @Test
     void findById() throws Exception{
-        Field FIRST_DICTfield = ReflectionUtils
-                .findFields(DictRestTemplate.class, f -> f.getName().equals("FIRST_DICT"),
-                        ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
-                .get(0);
-        Field SECOND_DICTfield = ReflectionUtils
-                .findFields(DictRestTemplate.class, f -> f.getName().equals("SECOND_DICT"),
-                        ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
-                .get(0);
-        FIRST_DICTfield.setAccessible(true);
-        SECOND_DICTfield.setAccessible(true);
-        FIRST_DICTfield.set(restTemplate, "test_id");
-        SECOND_DICTfield.set(restTemplate, "test_id2");
 
         SimpleEntity simpleEntity = new SimpleEntity(1L, "test_key1", "test_key2", "test_data");
         SimpleEntityReadDTO dto = new SimpleEntityReadDTO(simpleEntity.getId(), "test_value1",
@@ -95,19 +87,7 @@ class SimpleEntityServiceTest {
 
     @Test
     void save() throws Exception{
-        Field FIRST_DICTfield = ReflectionUtils
-                .findFields(DictRestTemplate.class, f -> f.getName().equals("FIRST_DICT"),
-                        ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
-                .get(0);
-        Field SECOND_DICTfield = ReflectionUtils
-                .findFields(DictRestTemplate.class, f -> f.getName().equals("SECOND_DICT"),
-                        ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
-                .get(0);
-        FIRST_DICTfield.setAccessible(true);
-        SECOND_DICTfield.setAccessible(true);
-        FIRST_DICTfield.set(restTemplate, "test_id");
-        SECOND_DICTfield.set(restTemplate, "test_id2");
-
+        
         SimpleEntity simpleEntity = new SimpleEntity(null, "test_key1", "test_key2", "test_data");
         SimpleEntityWriteDTO simpleEntityWriteDTO = new SimpleEntityWriteDTO(5L, simpleEntity.getFirstDictKey(),
                                                     simpleEntity.getSecondDictKey(), simpleEntity.getSomeTextData());
