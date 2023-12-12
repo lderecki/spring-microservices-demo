@@ -51,7 +51,7 @@ class SimpleEntityServiceTest {
         SECOND_DICTfield.set(restTemplate, "test_id2");
     }
     @Test
-    void findAll() throws Exception {
+    void findAll() {
 
         List<SimpleEntity> entities = new ArrayList<>();
         SimpleEntity simpleEntity = new SimpleEntity(1L, "test_key1", "test_key2", "test_data");
@@ -70,7 +70,7 @@ class SimpleEntityServiceTest {
     }
 
     @Test
-    void findById() throws Exception{
+    void findById() {
 
         SimpleEntity simpleEntity = new SimpleEntity(1L, "test_key1", "test_key2", "test_data");
         SimpleEntityReadDTO dto = new SimpleEntityReadDTO(simpleEntity.getId(), "test_value1",
@@ -86,7 +86,7 @@ class SimpleEntityServiceTest {
     }
 
     @Test
-    void save() throws Exception{
+    void save() {
         
         SimpleEntity simpleEntity = new SimpleEntity(null, "test_key1", "test_key2", "test_data");
         SimpleEntityWriteDTO simpleEntityWriteDTO = new SimpleEntityWriteDTO(5L, simpleEntity.getFirstDictKey(),

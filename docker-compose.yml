@@ -16,27 +16,39 @@ services:
     networks:
       - internal
   
+  eureka:
+    image: eureka-server:latest
+    restart: always
+    networks:
+      - internal
+    ports:
+      - 8761:8761
+
   dict-service:
     image: dict-service:latest
     restart: always
     depends_on:
       - db
+      - eureka
     environment:
       spring.datasource.url: jdbc:postgresql://db:5432/${DB_NAME}
       spring.datasource.username: ${DB_USER}
       spring.datasource.password: ${DB_PASSWORD}
+      eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
     networks:
       - internal
 
   crud-service:
-    image: dict-service:latest
+    image: crud-service:latest
     restart: always
     depends_on:
       - db
+      - eureka
     environment:
       spring.datasource.url: jdbc:postgresql://db:5432/${DB_NAME}
       spring.datasource.username: ${DB_USER}
       spring.datasource.password: ${DB_PASSWORD}
+      eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
     deploy:
       mode: replicated
       replicas: 1
