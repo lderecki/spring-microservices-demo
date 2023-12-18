@@ -3,9 +3,9 @@ package pl.lderecki.crudservice.service;
 import org.springframework.stereotype.Service;
 import pl.lderecki.crudservice.DTO.SimpleEntityReadDTO;
 import pl.lderecki.crudservice.DTO.SimpleEntityWriteDTO;
+import pl.lderecki.crudservice.feignClient.DictClientAdapter;
 import pl.lderecki.crudservice.model.SimpleEntity;
 import pl.lderecki.crudservice.repo.SimpleEntityRepo;
-import pl.lderecki.crudservice.restTemplate.DictRestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 public class SimpleEntityService {
 
     private final SimpleEntityRepo repo;
-    private final DictRestTemplate restTemplate;
+    private final DictClientAdapter client;
 
-    public SimpleEntityService(SimpleEntityRepo repo, DictRestTemplate restTemplate) {
+    public SimpleEntityService(SimpleEntityRepo repo, DictClientAdapter client) {
         this.repo = repo;
-        this.restTemplate = restTemplate;
+        this.client = client;
     }
 
     public List<SimpleEntityReadDTO> findAll() {
         List<SimpleEntity> result =  repo.findAll();
 
-        result.forEach(r -> restTemplate.translate(restTemplate.FIRST_DICT, r.getFirstDictKey()));
+        result.forEach(r -> client.translate(client.FIRST_DICT, r.getFirstDictKey()));
 
         return result.stream()
                                     .map(this::mapToReadDTO)
@@ -67,8 +67,8 @@ public class SimpleEntityService {
 
     private SimpleEntityReadDTO mapToReadDTO(SimpleEntity toMap) {
         return new SimpleEntityReadDTO(toMap.getId(),
-                restTemplate.translate(restTemplate.FIRST_DICT, toMap.getFirstDictKey()),
-                restTemplate.translate(restTemplate.SECOND_DICT, toMap.getSecondDictKey()),
+                client.translate(client.FIRST_DICT, toMap.getFirstDictKey()),
+                client.translate(client.SECOND_DICT, toMap.getSecondDictKey()),
                 toMap.getSomeTextData());
     }
 

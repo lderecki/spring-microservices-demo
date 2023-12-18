@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS public.simple_table
     id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     first_dict_key character varying(20) COLLATE pg_catalog."default",
     second_dict_key character varying(20) COLLATE pg_catalog."default",
-    "someTextData" character varying(200) COLLATE pg_catalog."default",
+    some_text_data character varying(200) COLLATE pg_catalog."default",
     CONSTRAINT simple_table_pkey PRIMARY KEY (id)
 )
 

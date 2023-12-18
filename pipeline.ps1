@@ -29,3 +29,10 @@ mvn clean install -DskipTests
 docker image build -t crud-service .
 cd ..
 echo "Building crud-service - DONE"
+
+echo "Building api-gateway"
+cd api-gateway
+mvn clean install -DskipTests
+docker image build -t api-gateway .
+cd ..
+echo "Building api-gateway - DONE"

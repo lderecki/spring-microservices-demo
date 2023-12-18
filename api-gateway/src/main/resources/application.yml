@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: prod
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: crud_service
+          uri: lb://crud-service
+          predicates:
+            - Path=/simple_entity
+        - id: dict_service
+          uri: lb://dict-service
+          predicates:
+            - Path=/dict_values
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

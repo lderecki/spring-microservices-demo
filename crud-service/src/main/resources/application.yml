@@ -5,6 +5,9 @@ spring:
     name: crud-service
 
 dicts:
+  service:
+    name: dict-service
+    endpoint: dict_values
   firstDict:
     key: first_dict
   secondDict:
@@ -33,10 +36,6 @@ eureka:
 server:
   port: 8082
 
-dicts:
-  service:
-    url: http://127.0.0.1:8081/dict_values
-
 ---
 
 spring:
@@ -50,6 +49,3 @@ spring:
 server:
   port: 0
 
-dicts:
-  service:
-    url: http://dict-service/dict_values
