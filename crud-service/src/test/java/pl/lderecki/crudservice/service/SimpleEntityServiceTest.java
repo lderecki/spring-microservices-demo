@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.lderecki.crudservice.DTO.SimpleEntityReadDTO;
 import pl.lderecki.crudservice.DTO.SimpleEntityWriteDTO;
+import pl.lderecki.crudservice.feignClient.DictClientAdapter;
 import pl.lderecki.crudservice.model.SimpleEntity;
 import pl.lderecki.crudservice.repo.SimpleEntityRepo;
 import pl.lderecki.crudservice.restTemplate.DictRestTemplate;
@@ -30,7 +31,7 @@ class SimpleEntityServiceTest {
     private SimpleEntityRepo repo;
 
     @Mock
-    private DictRestTemplate restTemplate;
+    private DictClientAdapter client;
 
     @InjectMocks
     private SimpleEntityService testClass;
@@ -38,17 +39,17 @@ class SimpleEntityServiceTest {
     @BeforeEach
     private void setFinals() throws Exception{
         Field FIRST_DICTfield = ReflectionUtils
-                .findFields(DictRestTemplate.class, f -> f.getName().equals("FIRST_DICT"),
+                .findFields(DictClientAdapter.class, f -> f.getName().equals("FIRST_DICT"),
                         ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
                 .get(0);
         Field SECOND_DICTfield = ReflectionUtils
-                .findFields(DictRestTemplate.class, f -> f.getName().equals("SECOND_DICT"),
+                .findFields(DictClientAdapter.class, f -> f.getName().equals("SECOND_DICT"),
                         ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
                 .get(0);
         FIRST_DICTfield.setAccessible(true);
         SECOND_DICTfield.setAccessible(true);
-        FIRST_DICTfield.set(restTemplate, "test_id");
-        SECOND_DICTfield.set(restTemplate, "test_id2");
+        FIRST_DICTfield.set(client, "test_id");
+        SECOND_DICTfield.set(client, "test_id2");
     }
     @Test
     void findAll() {
@@ -63,8 +64,8 @@ class SimpleEntityServiceTest {
                         .collect(Collectors.toList());
 
         when(repo.findAll()).thenReturn(entities);
-        when(restTemplate.translate("test_id", "test_key1")).thenReturn("test_value1");
-        when(restTemplate.translate("test_id2", "test_key2")).thenReturn("test_value2");
+        when(client.translate("test_id", "test_key1")).thenReturn("test_value1");
+        when(client.translate("test_id2", "test_key2")).thenReturn("test_value2");
 
         assertEquals(dtos, testClass.findAll());
     }
@@ -78,8 +79,8 @@ class SimpleEntityServiceTest {
 
         when(repo.findById(1L)).thenReturn(Optional.of(simpleEntity));
         when(repo.findById(2L)).thenReturn(Optional.empty());
-        when(restTemplate.translate("test_id", "test_key1")).thenReturn("test_value1");
-        when(restTemplate.translate("test_id2", "test_key2")).thenReturn("test_value2");
+        when(client.translate("test_id", "test_key1")).thenReturn("test_value1");
+        when(client.translate("test_id2", "test_key2")).thenReturn("test_value2");
 
         assertEquals(dto, testClass.findById(dto.getId()));
         assertThrows(IllegalArgumentException.class, () -> testClass.findById(2));
@@ -95,8 +96,8 @@ class SimpleEntityServiceTest {
         SimpleEntityReadDTO dto = new SimpleEntityReadDTO(1L, "test_value1",
                                         "test_value2", simpleEntity.getSomeTextData());
 
-        when(restTemplate.translate("test_id", "test_key1")).thenReturn("test_value1");
-        when(restTemplate.translate("test_id2", "test_key2")).thenReturn("test_value2");
+        when(client.translate("test_id", "test_key1")).thenReturn("test_value1");
+        when(client.translate("test_id2", "test_key2")).thenReturn("test_value2");
         when(repo.save(simpleEntity)).thenReturn(returnEntity);
 
         assertEquals(dto, testClass.save(simpleEntityWriteDTO));

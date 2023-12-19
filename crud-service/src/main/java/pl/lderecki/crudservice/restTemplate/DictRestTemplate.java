@@ -44,16 +44,17 @@ public class DictRestTemplate {
     public String translate(String dictId, String dictKey) {
 
         InstanceInfo instance = eurekaClient.getNextServerFromEureka(dictServiceName, false);
+        if (Objects.isNull(instance))
+            return dictKey;
+
         String baseUrl = instance.getHomePageUrl();
         URI uri = UriComponentsBuilder.fromUriString(baseUrl).path(endpoint).path("/" + dictId).path("/" + dictKey).build().toUri();
-        System.out.println(uri);
 
         Map<String, String> dictEntity = null;
         try {
             dictEntity = rest.getForObject(uri, HashMap.class);
         }
-        catch (RestClientException e)
-        {
+        catch (RestClientException e) {
             log.error("URI " + uri + " unreachable.");
         }
 
@@ -68,5 +69,11 @@ public class DictRestTemplate {
 
         return result;
     }
+
+/*    private String getInstanceUrl(String serviceName) {
+        InstanceInfo instance = eurekaClient.getNextServerFromEureka(dictServiceName, false);
+
+        String baseUrl = instance.getHomePageUrl();
+    }*/
 
 }
