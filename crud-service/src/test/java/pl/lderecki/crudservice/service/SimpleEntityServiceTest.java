@@ -12,7 +12,6 @@ import pl.lderecki.crudservice.DTO.SimpleEntityWriteDTO;
 import pl.lderecki.crudservice.feignClient.DictClientAdapter;
 import pl.lderecki.crudservice.model.SimpleEntity;
 import pl.lderecki.crudservice.repo.SimpleEntityRepo;
-import pl.lderecki.crudservice.restTemplate.DictRestTemplate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
