@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: prod
+  application:
+    name: oauth2-acs
+server:
+  port: 9000
+
+oauth2:
+  clientId: "api-client"
+  clientPassword: "password"
+
+api:
+  username: "user"
+  password: "password"
