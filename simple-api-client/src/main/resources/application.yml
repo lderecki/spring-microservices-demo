@@ -32,3 +32,11 @@ spring:
         provider:
           spring:
             issuer-uri: "http://oauth2-acs:9000"
+
+app:
+  api:
+    home:
+      url: "http://127.0.0.1:8080"
+    endpoints:
+      dict: "/dict_values"
+      crud: "/simple_entity"

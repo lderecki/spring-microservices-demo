@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <title>Projekt zespołowy</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+    <script type="text/javascript" th:src="@{/script.js}"></script>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1>Projekt Zespołowy</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            <h3>Słowniki</h3>
+            <br>
+
+
+            <form id="dict-form" method="POST" th:action="@{/index/dict_entity}" th:object="${dictEntityForm}">
+
+                <div class="form-group row">
+                    <label for="dict-id" class="col-2 col-form-label">Słownik: </label>
+                    <div class="col-10">
+                        <select id="dict-id" class="form-select" type="text" th:field="*{dictId}">
+                            <option th:value="null" selected>wybierz</option>
+                            <option th:each="d : ${dicts}" th:value="${d.dictId}" th:text="${d.dictName}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="dict-key" class="col-2 col-form-label">Klucz: </label>
+                    <div class="col-10">
+                        <input id="dict-key" class="form-control" type="text" th:field="*{dictKey}"/>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="dict-value" class="col-2 col-form-label">Wartość: </label>
+                    <div class="col-10">
+                        <input id="dict-value" class="form-control" type="text" th:field="*{dictValue}"/>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="dict-entity-disabled" class="col-2 col-form-label">Archiwalny: </label>
+                    <div class="col-10">
+                        <input id="dict-entity-disabled" class="form-check-input" type="checkbox" th:field="*{disabled}" onclick="return false"/>
+                    </div>
+                </div>
+
+                <input type="submit" class="btn btn-primary" value="Zapisz"/>
+                <input type="button" class="btn btn-danger" onclick="resetDictForm()" value="Reset" />
+            </form>
+            <br>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th style="display:none;"> Id słownika </th>
+                    <th> Słownik </th>
+                    <th> Klucz </th>
+                    <th> Wartość </th>
+                    <th> Akcja </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="e : ${dictEntities}">
+                    <td style="display:none;"><span th:text="${e.dictId}"> Id słownika </span></td>
+                    <td><span th:text="${e.dictName}"> Słownik </span></td>
+                    <td><span th:text="${e.dictKey}"> Klucz </span></td>
+                    <td><span th:text="${e.dictValue}"> Wartość </span></td>
+                    <td>
+                        <span>
+                            <button type="button" class="btn btn-primary" onclick="toggleDictUpdateMode(this)">Edytuj</button>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="col-7">
+            <h3>Encje</h3>
+            <br>
+
+            <form id="entity-form" method="POST" th:action="@{/index/entity}" th:object="${entity}">
+
+                <div class="form-group row">
+                    <label for="id" class="col-5 col-form-label">ID: </label>
+                    <div class="col-7">
+                        <input id="id" class="form-control" type="number" th:field="*{id}" readonly/>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="first-dict-key" class="col-5 col-form-label">Pierwsza wartość słownikowa: </label>
+                    <div class="col-7">
+                        <select id="first-dict-key" class="form-select" type="text" th:field="*{firstDictKey}">
+                            <option th:value="null" selected>wybierz</option>
+                            <option th:each="d : ${dict1}" th:value="${d.dictKey}" th:text="${d.dictValue}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="second-dict-key" class="col-5 col-form-label">Druga wartość słownikowa: </label>
+                    <div class="col-7">
+                        <select id="second-dict-key" class="form-select" type="text" th:field="*{secondDictKey}">
+                            <option th:value="null" selected>wybierz</option>
+                            <option th:each="d : ${dict2}" th:value="${d.dictKey}" th:text="${d.dictValue}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="some-text-data" class="col-5 col-form-label">Dane tekstowe: </label>
+                    <div class="col-7">
+                        <input id="some-text-data" class="form-control" type="text" th:field="*{someTextData}"/>
+                    </div>
+                </div>
+
+                <input type="submit" class="btn btn-primary"  value="Zapisz"/>
+                <input type="button" class="btn btn-danger" onclick="resetEntitiesForm()" value="Reset" />
+            </form>
+            <br>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th> id </th>
+                    <th style="display:none;"> Klucz słownika 1</th>
+                    <th> Pierwsza wartość słownikowa </th>
+                    <th style="display:none;"> Klucz słownika 2</th>
+                    <th> Druga wartość słownikowa </th>
+                    <th> Dane tekstowe </th>
+                    <th> Akcja </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="entt : ${entities}">
+                    <td><span th:text="${entt.id}"> id </span></td>
+                    <td style="display:none;"><span th:text="${entt.firstDictionaryKey}"> Klucz słownika 1 </span></td>
+                    <td><span th:text="${entt.firstDictionaryValue}"> Pierwsza wartość słownikowa </span></td>
+                    <td style="display:none;"><span th:text="${entt.secondDictionaryKey}"> Klucz słownika 1 </span></td>
+                    <td><span th:text="${entt.secondDictionaryValue}"> Druga wartość słownikowa </span></td>
+                    <td><span th:text="${entt.someTextData}"> Dane tekstowe </span></td>
+                    <td>
+                        <span>
+
+                            <form method="POST" th:action="@{/index/entity/delete/{id}(id=${entity.id})}" th:object="${entity}">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <button type="button" class="btn btn-primary" onclick="toggleEntityUpdateMode(this)">Edytuj</button>
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="submit" class="btn btn-danger" value="Usuń"/>
+                                    </div>
+                                </div>
+                            </form>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

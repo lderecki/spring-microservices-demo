@@ -12,11 +12,11 @@ spring:
         - id: crud_service
           uri: lb://crud-service
           predicates:
-            - Path=/simple_entity
+            - Path=/simple_entity/**
         - id: dict_service
           uri: lb://dict-service
           predicates:
-            - Path=/dict_values
+            - Path=/dict_values/**
 
 ---
 
