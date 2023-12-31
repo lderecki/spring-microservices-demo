@@ -5,9 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.lderecki.dictservice.DTO.DictDTO;
-import pl.lderecki.dictservice.DTO.DictEntityDTO;
-import pl.lderecki.dictservice.DTO.DictEntityUpdateDTO;
+import pl.lderecki.dictservice.DTO.*;
 import pl.lderecki.dictservice.model.Dict;
 import pl.lderecki.dictservice.model.DictEntity;
 import pl.lderecki.dictservice.repo.DictEntityRepo;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,16 +37,18 @@ class DictionaryServiceTest {
         Field inMemoryRepoField = testClass.getClass().getDeclaredField("inMemoryRepo");
         inMemoryRepoField.setAccessible(true);
 
-        Map<String, DictDTO> inMemRepoData = new HashMap<>();
-        Map<String, DictEntityDTO> entities = new HashMap<>();
+        Map<String, DictRepoDTO> inMemRepoData = new HashMap<>();
+        Map<String, DictEntityRepoDTO> entities = new HashMap<>();
 
-        entities.put("test_key", new DictEntityDTO("test_id", "test_key", "test_value"));
-        DictDTO dict = new DictDTO("test_id", "Testowy", entities);
+        entities.put("test_key", new DictEntityRepoDTO("test_id", "test_key", "test_value", false));
+        entities.put("test_key2", new DictEntityRepoDTO("test_id", "test_key2", "test_value2", true));
+        DictRepoDTO dict = new DictRepoDTO("test_id", "Testowy", entities);
         inMemRepoData.put("test_id", dict);
 
         inMemoryRepoField.set(testClass, inMemRepoData);
 
-        assertEquals(inMemRepoData, testClass.findAll());
+        assertEquals(1,
+                new ArrayList<>(testClass.findAll().values()).get(0).getEntities().values().size());
     }
 
     @Test
@@ -57,18 +56,15 @@ class DictionaryServiceTest {
         Field inMemoryRepoField = testClass.getClass().getDeclaredField("inMemoryRepo");
         inMemoryRepoField.setAccessible(true);
 
-        Map<String, DictDTO> inMemRepoData = new HashMap<>();
-        Map<String, DictEntityDTO> entities = new HashMap<>();
-        Map<String, DictEntityDTO> entities2 = new HashMap<>();
+        Map<String, DictRepoDTO> inMemRepoData = new HashMap<>();
 
-        DictDTO dict = new DictDTO("test_id", "Testowy", null);
-        DictDTO dict2 = new DictDTO("test_id2", "Testowy2", null);
+        DictRepoDTO dict = new DictRepoDTO("test_id", "Testowy", new HashMap<String, DictEntityRepoDTO>());
+        DictRepoDTO dict2 = new DictRepoDTO("test_id2", "Testowy2", new HashMap<String, DictEntityRepoDTO>());
         inMemRepoData.put("test_id", dict);
         inMemRepoData.put("test_id2", dict2);
 
         inMemoryRepoField.set(testClass, inMemRepoData);
-
-        assertEquals(dict, testClass.findDictById("test_id"));
+        assertEquals(new DictDTO(dict.getDictId(), dict.getDictName(), new HashMap<String, DictEntityDTO>()), testClass.findDictById("test_id"));
 
         assertThrows(IllegalArgumentException.class, () -> testClass.findDictById("test_id3"));
     }
@@ -78,19 +74,20 @@ class DictionaryServiceTest {
         Field inMemoryRepoField = testClass.getClass().getDeclaredField("inMemoryRepo");
         inMemoryRepoField.setAccessible(true);
 
-        Map<String, DictDTO> inMemRepoData = new HashMap<>();
-        Map<String, DictEntityDTO> entities = new HashMap<>();
+        Map<String, DictRepoDTO> inMemRepoData = new HashMap<>();
+        Map<String, DictEntityRepoDTO> entities = new HashMap<>();
 
-        DictEntityDTO entity = new DictEntityDTO("test_id", "test_key", "test_value");
-        DictEntityDTO entity2 = new DictEntityDTO("test_id", "test_key2", "test_value2");
+        DictEntityRepoDTO entity = new DictEntityRepoDTO("test_id", "test_key", "test_value", true);
+        DictEntityRepoDTO entity2 = new DictEntityRepoDTO("test_id", "test_key2", "test_value2", false);
         entities.put("test_key", entity);
         entities.put("test_key2", entity2);
-        DictDTO dict = new DictDTO("test_id", "Testowy", entities);
+        DictRepoDTO dict = new DictRepoDTO("test_id", "Testowy", entities);
         inMemRepoData.put("test_id", dict);
 
         inMemoryRepoField.set(testClass, inMemRepoData);
 
-        assertEquals(entity, testClass.findEntityById("test_id", "test_key"));
+        DictEntityDTO expected = new DictEntityDTO(entity.getDictId(), entity.getDictKey(), entity.getDictValue());
+        assertEquals(expected, testClass.findEntityById("test_id", "test_key"));
 
         assertThrows(IllegalArgumentException.class, () -> testClass.findEntityById("test_id", "not-existing"));
 
@@ -101,17 +98,18 @@ class DictionaryServiceTest {
         Field inMemoryRepoField = testClass.getClass().getDeclaredField("inMemoryRepo");
         inMemoryRepoField.setAccessible(true);
 
-        Map<String, DictDTO> inMemRepoData = new HashMap<>();
-        Map<String, DictEntityDTO> entities = new HashMap<>();
+        Map<String, DictRepoDTO> inMemRepoData = new HashMap<>();
+        Map<String, DictEntityRepoDTO> entities = new HashMap<>();
 
-        entities.put("test_key", new DictEntityDTO("test_id", "test_key", "test_value"));
-        DictDTO dict = new DictDTO("test_id", "Testowy", entities);
+        entities.put("test_key", new DictEntityRepoDTO("test_id", "test_key", "test_value", false));
+        DictRepoDTO dict = new DictRepoDTO("test_id", "Testowy", entities);
         inMemRepoData.put("test_id", dict);
 
         inMemoryRepoField.set(testClass, inMemRepoData);
 
         DictEntity correctEntity = new DictEntity("test_id", "test_key2", "test_value2", false);
-        DictEntityDTO correctEntityDTO = new DictEntityDTO(correctEntity);
+        DictEntityRepoDTO correctEntityRepoDTO = new DictEntityRepoDTO(correctEntity);
+        DictEntityDTO correctEntityDTO = new DictEntityDTO(correctEntityRepoDTO);
 
         DictEntityDTO nonUniqueEntityDTO = new DictEntityDTO("test_id", "test_key", "test_value");
         DictEntityDTO dictNotFoundEntityDTO = new DictEntityDTO("missing_id", "test_key", "test_value");
@@ -135,11 +133,11 @@ class DictionaryServiceTest {
         Field inMemoryRepoField = testClass.getClass().getDeclaredField("inMemoryRepo");
         inMemoryRepoField.setAccessible(true);
 
-        Map<String, DictDTO> inMemRepoData = new HashMap<>();
-        Map<String, DictEntityDTO> entities = new HashMap<>();
+        Map<String, DictRepoDTO> inMemRepoData = new HashMap<>();
+        Map<String, DictEntityRepoDTO> entities = new HashMap<>();
 
-        entities.put("test_key", new DictEntityDTO("test_id", "test_key", "test_value"));
-        DictDTO dict = new DictDTO("test_id", "Testowy", entities);
+        entities.put("test_key", new DictEntityRepoDTO("test_id", "test_key", "test_value", false));
+        DictRepoDTO dict = new DictRepoDTO("test_id", "Testowy", entities);
         inMemRepoData.put("test_id", dict);
 
         inMemoryRepoField.set(testClass, inMemRepoData);

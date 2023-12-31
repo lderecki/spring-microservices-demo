@@ -6,25 +6,25 @@ import lombok.NoArgsConstructor;
 import pl.lderecki.dictservice.model.Dict;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DictDTO implements Serializable {
+public class DictRepoDTO implements Serializable {
 
     private String dictId;
 
     private String dictName;
 
-    private Map<String, DictEntityDTO> entities = new HashMap<>();
+    private Map<String, DictEntityRepoDTO> entities = new HashMap<>();
 
-    public DictDTO(DictRepoDTO dict) {
+    public DictRepoDTO(Dict dict) {
         this.dictId = dict.getDictId();
         this.dictName = dict.getDictName();
-        dict.getEntities().values().forEach(e -> entities.put(e.getDictKey(), new DictEntityDTO(e)));
+        dict.getEntities().forEach(e -> entities.put(e.getDictKey(), new DictEntityRepoDTO(e)));
     }
 }

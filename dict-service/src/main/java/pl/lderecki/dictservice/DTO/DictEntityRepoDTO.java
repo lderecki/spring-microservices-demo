@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.lderecki.dictservice.model.DictEntity;
 
+import javax.persistence.Id;
 import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DictEntityDTO implements Serializable {
+public class DictEntityRepoDTO implements Serializable {
 
     private String dictId;
 
@@ -18,9 +19,12 @@ public class DictEntityDTO implements Serializable {
 
     private String dictValue;
 
-    public DictEntityDTO(DictEntityRepoDTO dictEntity) {
-        this.dictId = dictEntity.getDictId();
+    private boolean disabled;
+
+    public DictEntityRepoDTO(DictEntity dictEntity) {
+        this.dictId = dictEntity.getDict();
         this.dictKey = dictEntity.getDictKey();
         this.dictValue = dictEntity.getDictValue();
+        this.disabled = dictEntity.isDisabled();
     }
 }

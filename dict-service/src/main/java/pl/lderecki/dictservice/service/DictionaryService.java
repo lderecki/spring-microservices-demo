@@ -1,9 +1,7 @@
 package pl.lderecki.dictservice.service;
 
 import org.springframework.stereotype.Service;
-import pl.lderecki.dictservice.DTO.DictDTO;
-import pl.lderecki.dictservice.DTO.DictEntityDTO;
-import pl.lderecki.dictservice.DTO.DictEntityUpdateDTO;
+import pl.lderecki.dictservice.DTO.*;
 import pl.lderecki.dictservice.model.Dict;
 import pl.lderecki.dictservice.model.DictEntity;
 import pl.lderecki.dictservice.repo.DictEntityRepo;
@@ -14,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +22,7 @@ public class DictionaryService {
 
     private final DictEntityRepo dictEntityRepo;
 
-    private final Map<String, DictDTO> inMemoryRepo = new HashMap<>();
+    private final Map<String, DictRepoDTO> inMemoryRepo = new HashMap<>();
 
     public DictionaryService(DictRepo repo, DictEntityRepo dictEntityRepo) {
         this.repo = repo;
@@ -33,8 +32,8 @@ public class DictionaryService {
     @PostConstruct
     public void inMemoryRepoInit() {
         List<Dict> dicts = repo.findAll();
-        List<DictDTO> mapped = dicts.stream()
-                                    .map(DictDTO::new)
+        List<DictRepoDTO> mapped = dicts.stream()
+                                    .map(DictRepoDTO::new)
                                     .collect(Collectors.toList());
 
         mapped.forEach(d -> inMemoryRepo.put(d.getDictId(), d));
@@ -44,34 +43,55 @@ public class DictionaryService {
         inMemoryRepo.remove(dictId);
 
         Dict refreshedDict = repo.findByDictId(dictId);
-        inMemoryRepo.put(dictId, new DictDTO(refreshedDict));
+        inMemoryRepo.put(dictId, new DictRepoDTO(refreshedDict));
     }
 
     private boolean existsEntityInMemoryRepo(String dictId, String dictKey) {
-        Map<String, DictEntityDTO> dict = inMemoryRepo.get(dictId).getEntities();
+        Map<String, DictEntityRepoDTO> dict = inMemoryRepo.get(dictId).getEntities();
 
         return dict.containsKey(dictKey);
     }
 
     public Map<String, DictDTO> findAll() {
-        return inMemoryRepo;
+
+        Map<String, DictDTO> mapped = new HashMap<>();
+
+        inMemoryRepo.values()
+                .forEach(v -> mapped.put(
+                        v.getDictId(),
+                        new DictDTO(v.getDictId(), v.getDictName(),
+                                v.getEntities().values()
+                                        .stream()
+                                        .filter(e -> !e.isDisabled())
+                                        .map(DictEntityDTO::new)
+                                        .collect(Collectors.toMap(DictEntityDTO::getDictValue, Function.identity()))))
+                );
+
+        return mapped;
     }
 
     public DictDTO findDictById(String dictId) {
-        DictDTO result = inMemoryRepo.get(dictId);
+        DictRepoDTO searchResult = inMemoryRepo.get(dictId);
 
-        if (Objects.isNull(result))
+        if (Objects.isNull(searchResult))
             throw new IllegalArgumentException("Not found");
 
-        return result;
+        searchResult.setEntities(searchResult.getEntities().values().stream()
+                .filter(e -> !e.isDisabled())
+                .collect(Collectors.toMap(DictEntityRepoDTO::getDictValue, Function.identity()))
+        );
+
+        return new DictDTO(searchResult);
     }
 
     public DictEntityDTO findEntityById(String dictId, String dictKey) {
         if (!existsEntityInMemoryRepo(dictId, dictKey))
             throw new IllegalArgumentException("Not found");
 
-        Map<String, DictEntityDTO> dict = inMemoryRepo.get(dictId).getEntities();
-
+        Map<String, DictEntityRepoDTO> rawDict = inMemoryRepo.get(dictId).getEntities();
+        Map<String, DictEntityDTO> dict = rawDict.values().stream()
+                .map(DictEntityDTO::new)
+                .collect(Collectors.toMap(DictEntityDTO::getDictKey, Function.identity()));
         return dict.get(dictKey);
     }
 
@@ -91,7 +111,7 @@ public class DictionaryService {
         DictEntity savedEntity = dictEntityRepo.save(entity);
         refreshDict(entityDTO.getDictId());
 
-        return new DictEntityDTO(savedEntity);
+        return new DictEntityDTO(new DictEntityRepoDTO(savedEntity));
     }
 
     public void updateDictEntity(DictEntityUpdateDTO entityDTO, String dictId, String dictKey) {
