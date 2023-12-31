@@ -36,7 +36,7 @@ class SimpleEntityServiceTest {
     private SimpleEntityService testClass;
 
     @BeforeEach
-    private void setFinals() throws Exception{
+    public void setFinals() throws Exception{
         Field FIRST_DICTfield = ReflectionUtils
                 .findFields(DictClientAdapter.class, f -> f.getName().equals("FIRST_DICT"),
                         ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
@@ -58,8 +58,8 @@ class SimpleEntityServiceTest {
         entities.add(simpleEntity);
 
         List<SimpleEntityReadDTO> dtos = entities.stream()
-                        .map(e -> new SimpleEntityReadDTO(simpleEntity.getId(), "test_value1",
-                                "test_value2", "test_data"))
+                        .map(e -> new SimpleEntityReadDTO(simpleEntity.getId(), "test_key1", "test_value1",
+                                "test_key2", "test_value2", "test_data"))
                         .collect(Collectors.toList());
 
         when(repo.findAll()).thenReturn(entities);
@@ -73,8 +73,8 @@ class SimpleEntityServiceTest {
     void findById() {
 
         SimpleEntity simpleEntity = new SimpleEntity(1L, "test_key1", "test_key2", "test_data");
-        SimpleEntityReadDTO dto = new SimpleEntityReadDTO(simpleEntity.getId(), "test_value1",
-                                                          "test_value2", simpleEntity.getSomeTextData());
+        SimpleEntityReadDTO dto = new SimpleEntityReadDTO(simpleEntity.getId(), "test_key1", "test_value1",
+                "test_key2", "test_value2", simpleEntity.getSomeTextData());
 
         when(repo.findById(1L)).thenReturn(Optional.of(simpleEntity));
         when(repo.findById(2L)).thenReturn(Optional.empty());
@@ -92,8 +92,8 @@ class SimpleEntityServiceTest {
         SimpleEntityWriteDTO simpleEntityWriteDTO = new SimpleEntityWriteDTO(5L, simpleEntity.getFirstDictKey(),
                                                     simpleEntity.getSecondDictKey(), simpleEntity.getSomeTextData());
         SimpleEntity returnEntity = new SimpleEntity(1L, "test_key1", "test_key2", "test_data");
-        SimpleEntityReadDTO dto = new SimpleEntityReadDTO(1L, "test_value1",
-                                        "test_value2", simpleEntity.getSomeTextData());
+        SimpleEntityReadDTO dto = new SimpleEntityReadDTO(1L, "test_key1", "test_value1",
+                "test_key2", "test_value2", simpleEntity.getSomeTextData());
 
         when(client.translate("test_id", "test_key1")).thenReturn("test_value1");
         when(client.translate("test_id2", "test_key2")).thenReturn("test_value2");

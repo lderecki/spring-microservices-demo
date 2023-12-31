@@ -64,10 +64,11 @@ public class SimpleEntityService {
     }
 
 
-
     private SimpleEntityReadDTO mapToReadDTO(SimpleEntity toMap) {
         return new SimpleEntityReadDTO(toMap.getId(),
+                toMap.getFirstDictKey(),
                 client.translate(client.FIRST_DICT, toMap.getFirstDictKey()),
+                toMap.getSecondDictKey(),
                 client.translate(client.SECOND_DICT, toMap.getSecondDictKey()),
                 toMap.getSomeTextData());
     }

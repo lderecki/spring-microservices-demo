@@ -50,16 +50,7 @@ public class AppController {
         model.addAttribute("dict1", dict1);
         model.addAttribute("dict2", dict2);
 
-        //TODO do poprawy, pobieranie klucza ze słownika za pomocą wartości
-        List<SimpleEntityReadDTO> entitiesRaw = service.findAllSimpleEntities(authorizedClient);
-        List<SimpleEntityTableReadDTO> entities = entitiesRaw.stream()
-                .map(e -> new SimpleEntityTableReadDTO(e.getId(),
-                        dict1.stream().filter(d -> d.getDictValue().equals(e.getFirstDictionaryValue())).findFirst().orElseThrow().getDictKey(),
-                        e.getFirstDictionaryValue(),
-                        dict2.stream().filter(d2 -> d2.getDictValue().equals(e.getSecondDictionaryValue())).findFirst().orElseThrow().getDictKey(),
-                        e.getSecondDictionaryValue(),
-                        e.getSomeTextData()))
-                .collect(Collectors.toList());
+        List<SimpleEntityReadDTO> entities = service.findAllSimpleEntities(authorizedClient);
         model.addAttribute("entities", entities);
 
         return "index";

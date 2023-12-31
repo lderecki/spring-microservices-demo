@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 public class SimpleEntityReadDTO {
 
     private long id;
+    private String firstDictionaryKey;
     private String firstDictionaryValue;
+    private String secondDictionaryKey;
     private String secondDictionaryValue;
     private String someTextData;
 }
