@@ -19,6 +19,11 @@ public class SecurityConfig {
                 .matchers(new PathPatternParserServerWebExchangeMatcher("/simple_entity/**"))
                 .hasAuthority("SCOPE_read_write")
                 .and()
+                .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/dict_values/**"))
+                .authorizeExchange()
+                .matchers(new PathPatternParserServerWebExchangeMatcher("/dict_values/**"))
+                .hasAuthority("SCOPE_read_write")
+                .and()
                 .oauth2ResourceServer()
                 .jwt();
         return http.build();

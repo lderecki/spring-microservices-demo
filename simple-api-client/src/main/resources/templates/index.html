@@ -154,7 +154,7 @@
                     <td>
                         <span>
 
-                            <form method="POST" th:action="@{/index/entity/delete/{id}(id=${entity.id})}" th:object="${entity}">
+                            <form method="POST" th:action="@{/index/entity/delete/{id}(id=${entt.id})}" th:object="${entity}">
                                 <div class="row">
                                     <div class="col-5">
                                         <button type="button" class="btn btn-primary" onclick="toggleEntityUpdateMode(this)">Edytuj</button>

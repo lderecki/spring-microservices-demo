@@ -1,4 +1,8 @@
 spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
   profiles:
     active: prod
   application:
@@ -10,6 +14,6 @@ oauth2:
   clientId: "api-client"
   clientPassword: "password"
 
-api:
-  username: "user"
-  password: "password"
+#api:
+#  username: "user"
+#  password: "password"

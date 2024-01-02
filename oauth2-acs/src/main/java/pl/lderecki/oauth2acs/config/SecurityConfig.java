@@ -1,25 +1,25 @@
 package pl.lderecki.oauth2acs.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import pl.lderecki.oauth2acs.service.UserService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig {
 
-    @Value("${api.username}")
-    private String username;
+    private final UserService userService;
 
-    @Value("${api.password}")
-    private String password;
+    public SecurityConfig(UserService userService) {
+        this.userService = userService;
+    }
 
     @Bean
     SecurityFilterChain loginFormSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -31,13 +31,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    UserDetailsService userDetailsService() {
-        UserDetails inMemoryUser = User.withDefaultPasswordEncoder()
-                .username(username)
-                .password(password)
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(inMemoryUser);
+    public DaoAuthenticationProvider authProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
+
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(4);
     }
 
 }

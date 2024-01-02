@@ -47,6 +47,41 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.simple_table
     OWNER to postgres;
 
+------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.app_user
+(
+    id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    username character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(500) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT user_pkey PRIMARY KEY (id),
+    CONSTRAINT unique_username UNIQUE (username)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.app_user
+    OWNER to postgres;
+
+------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.user_authority
+(
+    id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    authority character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    user_id bigint NOT NULL,
+    CONSTRAINT user_authority_pkey PRIMARY KEY (user_id),
+    CONSTRAINT fk_user_auth_user FOREIGN KEY (user_id)
+        REFERENCES public.app_user (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.user_authority
+    OWNER to postgres;
 
 
 -- Basic dict values
@@ -77,7 +112,7 @@ INSERT INTO public.dict_values(
 	dict_id, dict_key, dict_value)
 	VALUES ('second_dict', 'CW', 'Czwarta wartość');
 
---------------------------------------------------------
+-- Basic entities
 
 INSERT INTO public.simple_table(
 	first_dict_key, second_dict_key, some_text_data)
@@ -86,3 +121,15 @@ INSERT INTO public.simple_table(
 INSERT INTO public.simple_table(
 	first_dict_key, second_dict_key, some_text_data)
 	VALUES ('DW', 'CW', 'Dane tekstowe 2');
+
+-- Basic users
+
+INSERT INTO public.app_user(
+	username, password)
+	VALUES ('user', '$2a$04$5XEWygP1D1vp64cFz7QckuhVt3gRgl.5ZUyFJNDjzOaZpstvfVnmq');
+	
+INSERT INTO public.user_authority(
+	authority, user_id)
+	VALUES ('USER', (SELECT id
+					FROM public.app_user
+					WHERE username = 'user'));

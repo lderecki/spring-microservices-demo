@@ -42,11 +42,13 @@ services:
     depends_on:
       - eureka
     environment:
+      spring.datasource.url: jdbc:postgresql://db:5432/${DB_NAME}
+      spring.datasource.username: ${DB_USER}
+      spring.datasource.password: ${DB_PASSWORD}
       eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
       oauth2.clientId: ${OAUTH2_CLIENT_ID}
       oauth2.password: ${OAUTH2_PASSWORD}
-      api.username: ${API_USER}
-      api.password: ${API_PASSWORD}
+
     ports:
       - 9000:9000
     networks:
