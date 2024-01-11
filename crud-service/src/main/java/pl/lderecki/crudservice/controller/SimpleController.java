@@ -1,6 +1,7 @@
 package pl.lderecki.crudservice.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/simple_entity")
 public class SimpleController {
@@ -25,6 +27,8 @@ public class SimpleController {
     @GetMapping
     public ResponseEntity<List<SimpleEntityReadDTO>> get() {
         List<SimpleEntityReadDTO> result = service.findAll();
+
+        log.info("Hello from instance");
 
         return ResponseEntity.ok(result);
     }

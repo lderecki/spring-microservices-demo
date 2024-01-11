@@ -126,7 +126,7 @@ public class ApiClientService {
         return new ArrayList<>(response.getEntities().values());
     }
 
-    public Map<String, DictDTO> findAllDicts(OAuth2AuthorizedClient authorizedClient) throws WebClientException {
+    public Map<String, DictDTO> findAllDicts(OAuth2AuthorizedClient authorizedClient) /*throws WebClientException*/ {
 
         Mono<Map<String, DictDTO>> responseMono = webClient
                 .get()
@@ -135,7 +135,14 @@ public class ApiClientService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, DictDTO>>(){});
 
-        Map<String, DictDTO> responseBody = responseMono.block();
+        Map<String, DictDTO> responseBody = null;
+
+        try {
+        responseBody = responseMono.block();
+        }
+        catch (WebClientException e) {
+            e.printStackTrace();
+        }
 
         if (Objects.isNull(responseBody))
             return Map.of();

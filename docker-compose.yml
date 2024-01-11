@@ -81,7 +81,7 @@ services:
       eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 2
     networks:
       - internal
 

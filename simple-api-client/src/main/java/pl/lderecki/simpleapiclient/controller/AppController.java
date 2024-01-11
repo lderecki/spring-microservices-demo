@@ -45,8 +45,14 @@ public class AppController {
 
         model.addAttribute("entity", new SimpleEntityWriteDTO());
 
-        List<DictEntityDTO> dict1 = new ArrayList<>(dicts.get("first_dict").getEntities().values());
-        List<DictEntityDTO> dict2 = new ArrayList<>(dicts.get("second_dict").getEntities().values());
+        List<DictEntityDTO> dict1 = new ArrayList<>();
+        List<DictEntityDTO> dict2 = new ArrayList<>();
+
+        if (!dicts.isEmpty()) {
+            dict1.addAll(dicts.get("first_dict").getEntities().values());
+            dict2.addAll(dicts.get("second_dict").getEntities().values());
+        }
+
         model.addAttribute("dict1", dict1);
         model.addAttribute("dict2", dict2);
 
