@@ -2,7 +2,7 @@
 Project created to complete a master's degree course. It is based on microservice architecture. This application doesn't have complex functionality. It's purpose is to show basic cloud architecture.
 
 # Tech stack
-Each micreoservice is build with Java and Spring Framework and dockerized. RDBMS used in this projest is PostgreSQL 15.4, also dockerized. There is also API client which provides Thymeleaf template engine based GUI. All services communicate with each other using REST API.
+Each microservice is build with Java and Spring Framework and dockerized. RDBMS used in this projest is PostgreSQL 15.4, also dockerized. There is also API client which provides Thymeleaf template engine based GUI. All services communicate with each other using REST API.
 
 # Architecture
 
