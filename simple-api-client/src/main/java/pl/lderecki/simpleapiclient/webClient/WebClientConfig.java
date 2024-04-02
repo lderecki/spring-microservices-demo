@@ -20,6 +20,7 @@ public class WebClientConfig {
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         return WebClient.builder()
                 .apply(oauth2Client.oauth2Configuration())
+                .codecs(c -> c.defaultCodecs().maxInMemorySize(10000 * 1024))
                 .build();
     }
 

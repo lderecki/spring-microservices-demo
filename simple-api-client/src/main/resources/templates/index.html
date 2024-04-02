@@ -8,11 +8,11 @@
     <script type="text/javascript" th:src="@{/script.js}"></script>
 </head>
 
-<body>
+<body th:style="'background-image: url(' + ${backgroundImageUri} + ');'">
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-5">
             <h1>Projekt Zespołowy</h1>
         </div>
     </div>

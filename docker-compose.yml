@@ -81,7 +81,20 @@ services:
       eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
+    networks:
+      - internal
+
+  ai-api-consumer:
+    image: ai-api-consumer:latest
+    restart: always
+    depends_on:
+      - eureka
+    environment:
+      api.token: ${TOKEN}
+      api.ai-provider: ${AI_PROVIDER}
+      api.image-resolution: ${IMAGE_RESOLUTION}
+      eureka.client.serviceUrl.defaultZone: http://eureka:8761/eureka
     networks:
       - internal
 

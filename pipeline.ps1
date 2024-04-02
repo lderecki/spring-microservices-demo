@@ -42,6 +42,12 @@ $env:JAVA_HOME = "C:\Program Files\Java\jdk-17"
 cd oauth2-acs
 mvn clean install -DskipTests
 docker image build -t oauth2-acs .
+cd..
+
+echo "Building ai-api-consumer"
+cd ai-api-consumer
+mvn clean install -DskipTests
+docker image build -t ai-api-consumer .
 $env:JAVA_HOME = "C:\Program Files\Java\jdk1.8.0_202"
 cd ..
-echo "Building oauth2-acs - DONE"
+echo "Building ai-api-consumer - DONE"

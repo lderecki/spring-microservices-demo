@@ -16,3 +16,11 @@ input::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.full-height-container {
+    height: 100%;
+}
+
+label, h1, h3 {
+    background-color: white;
+}

@@ -1,0 +1,34 @@
+spring:
+  profiles:
+    active: prod
+  application:
+    name: ai-api-consumer
+api:
+  baseUrl: https://api.edenai.run/v2
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+api:
+  token: 
+  ai-provider: openai
+  image-resolution: 1024x1024
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: 0

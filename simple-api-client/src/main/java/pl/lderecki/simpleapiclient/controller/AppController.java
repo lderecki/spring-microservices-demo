@@ -1,11 +1,14 @@
 package pl.lderecki.simpleapiclient.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.lderecki.simpleapiclient.DTO.*;
+import pl.lderecki.simpleapiclient.controller.session.SessionBackground;
 import pl.lderecki.simpleapiclient.service.ApiClientService;
 
 import java.util.ArrayList;
@@ -18,9 +21,14 @@ import java.util.stream.Collectors;
 public class AppController {
 
     private final ApiClientService service;
+    private final SessionBackground sessionBackground;
 
-    public AppController(ApiClientService service) {
+    private final String serverPort;
+
+    public AppController(ApiClientService service, SessionBackground sessionBackground, @Value("${server.port}") String serverPort) {
         this.service = service;
+        this.sessionBackground = sessionBackground;
+        this.serverPort = serverPort;
     }
 
 
@@ -28,6 +36,19 @@ public class AppController {
     public String getIndexPage(
             @RegisteredOAuth2AuthorizedClient("api-client-authorization-code") OAuth2AuthorizedClient authorizedClient,
             Model model) {
+
+        if (sessionBackground.getImage() == null)
+            return "redirect:/background_image";
+
+        String backgroundImageUri = UriComponentsBuilder.newInstance()
+                .scheme("http")
+                .host("127.0.0.1")
+                .port(serverPort)
+                .path("/background_image")
+                .path("/image")
+                .toUriString();
+
+        model.addAttribute("backgroundImageUri", backgroundImageUri);
 
         model.addAttribute("dictEntityForm", new DictEntityFormDTO());
 

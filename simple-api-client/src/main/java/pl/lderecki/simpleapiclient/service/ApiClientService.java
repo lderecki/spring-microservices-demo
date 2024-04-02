@@ -5,6 +5,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
 
@@ -180,5 +180,21 @@ public class ApiClientService {
         ResponseEntity<DictEntityDTO> responseBody = monoResponse.block();
     }
 
+    public byte[] getImageWithDescription(OAuth2AuthorizedClient authorizedClient, String description) {
+
+        Mono<ResponseEntity<byte[]>> monoResponse = webClient
+                .get()
+                .uri(apiUrl + "/image?query=" + description)
+                .attributes(oauth2AuthorizedClient(authorizedClient))
+                .retrieve()
+                .toEntity(byte[].class);
+
+        ResponseEntity<byte[]> responseBody = monoResponse.block();
+
+        if (!responseBody.hasBody())
+            throw new RestClientException("Bad response");
+
+        return responseBody.getBody();
+    }
 
 }
